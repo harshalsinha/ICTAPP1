@@ -1,0 +1,42 @@
+{
+  "project_info": {
+    "project_number": "631312139446",
+    "firebase_url": "https://ictapp1-6a767.firebaseio.com",
+    "project_id": "ictapp1-6a767",
+    "storage_bucket": "ictapp1-6a767.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:631312139446:android:b4e96937960334cd",
+        "android_client_info": {
+          "package_name": "com.example.mahe.ictapp1"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "631312139446-007pva203s333p5usn4i0v6g9sqmb1io.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyBWXt7MI5fn0f21AvpMhrVU2xdarPvoPM8"
+        }
+      ],
+      "services": {
+        "analytics_service": {
+          "status": 1
+        },
+        "appinvite_service": {
+          "status": 1,
+          "other_platform_oauth_client": []
+        },
+        "ads_service": {
+          "status": 2
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}

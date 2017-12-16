@@ -1,0 +1,270 @@
+package com.example.mahe.ictapp1;
+
+import android.content.Intent;
+import android.content.SharedPreferences;
+import android.os.AsyncTask;
+import android.os.Bundle;
+import android.support.design.widget.FloatingActionButton;
+import android.support.design.widget.Snackbar;
+import android.support.v4.app.Fragment;
+import android.support.v4.app.FragmentManager;
+import android.view.View;
+import android.support.design.widget.NavigationView;
+import android.support.v4.view.GravityCompat;
+import android.support.v4.widget.DrawerLayout;
+import android.support.v7.app.ActionBarDrawerToggle;
+import android.support.v7.app.AppCompatActivity;
+import android.support.v7.widget.Toolbar;
+import android.view.Menu;
+import android.view.MenuItem;
+import android.widget.AdapterView;
+import android.widget.LinearLayout;
+import android.widget.ListView;
+import android.widget.RelativeLayout;
+import android.widget.Toast;
+
+import java.sql.Connection;
+import java.sql.DriverManager;
+import java.sql.ResultSet;
+import java.sql.Statement;
+import java.util.ArrayList;
+
+
+public class Nav extends AppCompatActivity
+        implements NavigationView.OnNavigationItemSelectedListener {
+
+    ListView lv;
+    //String[] titles = {"Dr.Ajitha Shenoy","Mr.Arjun CV"};
+    //String[] subtitles = {"Assistant Professor(Senior Scale)","Assistant Professor"};
+    //int[] images = {R.drawable.rihanna,R.drawable.ic_insert_emoticon_black_24dp};
+
+    String sem;
+
+    public ArrayList<String> f_names;
+    public ArrayList<String> f_designations;
+    public ArrayList<String> f_domains;
+    public ArrayList<String> f_emails;
+
+    private static final String url = "jdbc:mysql://in-cdbr-azure-south-c.cloudapp.net:3306/ictapp1";
+    private static final String user = "bec4313551039c";
+    private static final String password = "089170b6";
+
+
+    String[] titles;
+    String[] subtitles;
+    int[] images;
+
+    SharedPreferences sharedPreferences;
+    SharedPreferences.Editor editor;
+
+    private boolean isStartup;
+
+    @Override
+    protected void onCreate(Bundle savedInstanceState) {
+        super.onCreate(savedInstanceState);
+
+        setTitle("Current Sem Faculty");
+
+        setContentView(R.layout.activity_nav);
+        String regno = "140953216";
+
+        if(regno.charAt(0)=='1' && regno.charAt(1)=='4')
+        {
+            sem = "6";
+        }
+        else if(regno.charAt(0)=='1' && regno.charAt(1)=='5')
+        {
+            sem = "4";
+        }
+
+        f_names = new ArrayList<String>();
+        f_designations = new ArrayList<String>();
+        f_domains = new ArrayList<String>();
+        f_emails = new ArrayList<String>();
+        new MyTask();
+
+
+        lv = (ListView)findViewById(R.id.list);
+
+        ListAdapter listAdapter = new ListAdapter(this,titles,subtitles,images);
+        lv.setAdapter(listAdapter);
+
+        lv.setOnItemClickListener(new AdapterView.OnItemClickListener() {
+            @Override
+            public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
+                Toast.makeText(getApplicationContext(),titles[position],Toast.LENGTH_LONG).show();
+            }
+        });
+        
+        
+        isStartup = false;
+        Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
+        setSupportActionBar(toolbar);
+
+        FloatingActionButton fab = (FloatingActionButton) findViewById(R.id.fab);
+        fab.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                Snackbar.make(view, "Replace with your own action", Snackbar.LENGTH_LONG)
+                        .setAction("Action", null).show();
+            }
+        });
+
+        DrawerLayout drawer = (DrawerLayout) findViewById(R.id.drawer_layout);
+        ActionBarDrawerToggle toggle = new ActionBarDrawerToggle(
+                this, drawer, toolbar, R.string.navigation_drawer_open, R.string.navigation_drawer_close);
+        drawer.setDrawerListener(toggle);
+        toggle.syncState();
+
+        NavigationView navigationView = (NavigationView) findViewById(R.id.nav_view);
+        navigationView.setNavigationItemSelectedListener(this);
+
+
+    }
+
+    @Override
+    public void onBackPressed() {
+        DrawerLayout drawer = (DrawerLayout) findViewById(R.id.drawer_layout);
+        if (drawer.isDrawerOpen(GravityCompat.START)) {
+            drawer.closeDrawer(GravityCompat.START);
+        }
+        else{
+        }
+    }
+
+    @Override
+    public boolean onCreateOptionsMenu(Menu menu) {
+        // Inflate the menu; this adds items to the action bar if it is present.
+        getMenuInflater().inflate(R.menu.nav, menu);
+        return true;
+    }
+
+    @Override
+    public boolean onOptionsItemSelected(MenuItem item) {
+        // Handle action bar item clicks here. The action bar will
+        // automatically handle clicks on the Home/Up button, so long
+        // as you specify a parent activity in AndroidManifest.xml.
+        int id = item.getItemId();
+
+        //noinspection SimplifiableIfStatement
+        if (id == R.id.action_settings) {
+            return true;
+        }
+
+        return super.onOptionsItemSelected(item);
+    }
+
+    @SuppressWarnings("StatementWithEmptyBody")
+    @Override
+    public boolean onNavigationItemSelected(MenuItem item) {
+        // Handle navigation view item clicks here.
+
+        Fragment fragment;
+
+        sharedPreferences = getSharedPreferences("Registration",0);
+        editor = sharedPreferences.edit();
+
+        int id = item.getItemId();
+
+        if (id == R.id.nav_quickList) {
+            isStartup = false;
+            if(isStartup == false) {
+                ((LinearLayout) findViewById(R.id.content_nav)).removeAllViews();
+            }
+            fragment = new QuickList();
+            FragmentManager fragmentManager = getSupportFragmentManager();
+            fragmentManager.beginTransaction().replace(R.id.content_nav,fragment).commit();
+
+        } else if (id == R.id.nav_faculty) {
+            isStartup = false;
+            if(isStartup == false) {
+                ((LinearLayout) findViewById(R.id.content_nav)).removeAllViews();
+            }
+            fragment = new Faculty_fragment();
+            FragmentManager fragmentManager = getSupportFragmentManager();
+            fragmentManager.beginTransaction().replace(R.id.content_nav,fragment).commit();
+
+
+        } else if (id == R.id.nav_search) {
+            isStartup = false;
+            if(isStartup == false) {
+                ((LinearLayout) findViewById(R.id.content_nav)).removeAllViews();
+            }
+            fragment = new Search_fragment();
+            FragmentManager fragmentManager = getSupportFragmentManager();
+            fragmentManager.beginTransaction().replace(R.id.content_nav,fragment).commit();
+
+
+        } else if (id == R.id.nav_current) {
+            startActivity(new Intent(this,Nav.class));
+
+        } else if (id == R.id.nav_about) {
+
+        }
+        else if (id == R.id.nav_logout)
+        {
+            editor.clear();
+            editor.commit();
+            startActivity(new Intent(this,MainActivity.class));
+        }
+
+        DrawerLayout drawer = (DrawerLayout) findViewById(R.id.drawer_layout);
+        drawer.closeDrawer(GravityCompat.START);
+        return true;
+    }
+
+
+    private class MyTask extends AsyncTask<Void, Void, Void> {
+        @Override
+        protected Void doInBackground(Void... arg0)
+        {
+            try{
+                Class.forName("com.mysql.jdbc.Driver");
+                Connection con = DriverManager.getConnection(url,user,password);
+
+                Statement st = con.createStatement();
+                //String sql = "select * from ictapp1"
+                //"INSERT INTO `time_entry`(pid,tid,rid,tspend,description) VALUE ('"+pid+"','"+tid+"','"+rid+"',"+tspent+",'"+des+"')"
+                //st.executeUpdate("INSERT INTO `student_info`(student_id,regno,name,password) VALUE (NULL,'"+regno+"','"+name+"','"+pwd+"')");
+
+                String query;
+                query = "Select * from faculty "
+                        +"where Teaches like '4A'";
+
+                ResultSet rs = st.executeQuery(query);
+
+                while(rs.next())
+                {
+                    f_names.add(rs.getString(2));
+                    f_designations.add(rs.getString(3));
+                    f_domains.add(rs.getString(4));
+                    f_emails.add(rs.getString(5));
+                }
+                st.close();
+            }
+            catch (Exception e)
+            {
+                e.printStackTrace();
+            }
+            return null;
+        }
+
+        protected void onPostExecute(Void result)
+        {
+            super.onPostExecute(result);
+
+            titles = f_names.toArray(new String[f_names.size()]);
+
+            subtitles = f_designations.toArray(new String[f_designations.size()]);
+            
+            images = new int[f_names.size()];
+            for(int i=0;i<f_names.size();i++)
+                images[i] = R.drawable.ic_insert_emoticon_black_24dp;
+
+            Toast.makeText(getApplicationContext(),subtitles[0],Toast.LENGTH_LONG).show();
+        }
+
+    }
+
+
+}
