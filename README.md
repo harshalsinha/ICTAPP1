@@ -1,3 +1,3 @@
 # ICTAPP1
 
-Android Project developed to help in the better functioning of my college department.
+Android app developed to help in the better functioning of my college department.
